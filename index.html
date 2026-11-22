@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f4586">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Расписание — ПФ4-1-26МБ</title>
+  <style>
+    :root {
+      /* Colores obtenidos de la captura original */
+      --azul: #1f4586;
+      --fondo: #f5f4f9;
+      --gris: #777777;
+      --verde: #07870c;
+      --naranja: #fa990a;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { margin: 0; background: var(--fondo); color: #1c1c1c; font-family: Roboto, Arial, Helvetica, sans-serif; }
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible { outline: 2px solid var(--naranja); outline-offset: 3px; }
+    .app { width: 100%; max-width: 480px; min-width: 320px; min-height: 100dvh; margin: 0 auto; background: var(--fondo); padding-bottom: 22px; }
+
+    /* Barra azul: altura y posiciones de la aplicación de referencia */
+    .topbar { height: 48px; background: var(--azul); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; box-shadow: 0 2px 4px #0004; }
+    .logo { display: block; width: 43px; height: 43px; flex: none; }
+    .top-right { display: flex; gap: 18px; align-items: center; color: #fff; }
+    .glasses { display: block; width: 32px; height: 32px; }
+    .login { display: inline-flex; align-items: center; gap: 7px; font-size: 19px; font-weight: 600; letter-spacing: 1.5px; white-space: nowrap; }
+    .login svg { width: 27px; height: 27px; fill: #fff; }
+
+    .wrap { padding: 9px 8px 0; }
+    .chips { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 11px; }
+    .chips-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .circle { border: 0; border-radius: 50%; width: 33px; height: 33px; flex: none; color: #fff; background: var(--azul); display: grid; place-items: center; box-shadow: 0 3px 7px #0003; cursor: pointer; }
+    .circle svg { width: 21px; height: 21px; fill: currentColor; }
+    .pill { height: 33px; background: var(--azul); color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 13px; border-radius: 999px; font-size: 14px; font-weight: 400; white-space: nowrap; }
+    .updated { padding-inline: 12px; font-size: 14px; }
+
+    /* Selector nativo invisible encima del control dibujado: funciona en iOS/Android */
+    .datebox { height: 76px; position: relative; display: flex; align-items: center; gap: 9px; background: var(--azul); border-radius: 5px; padding: 11px 12px; margin-bottom: 8px; box-shadow: 0 2px 4px #0004; color: #fff; cursor: pointer; }
+    .date-icon { width: 25px; height: 25px; flex: none; fill: #fff; }
+    .date-content { align-self: stretch; min-width: 0; flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 3px; }
+    .datebox::after { content: ""; position: absolute; left: 45px; right: 12px; bottom: 14px; border-bottom: 1px solid #c5d3ed; pointer-events: none; }
+    .date-label { font-size: 12px; line-height: 16px; color: #b6c7df; }
+    .date-value { margin-top: 2px; font-size: 17px; line-height: 22px; font-weight: 400; white-space: nowrap; }
+    .chevron { width: 23px; height: 23px; flex: none; stroke: #fff; stroke-width: 3.1; fill: none; stroke-linecap: round; stroke-linejoin: round; margin: 12px 1px 0 0; }
+    .date-input { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; opacity: 0; cursor: pointer; }
+
+    /* Únicamente los cuatro controles de la imagen original */
+    .actions { display: flex; justify-content: flex-end; align-items: center; gap: 9px; margin-bottom: 7px; }
+    .actions .circle { width: 41px; height: 41px; }
+    .actions .circle svg { width: 24px; height: 24px; }
+    .actions .circle.search-symbol svg { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; }
+
+    .dayhead { height: 36px; display: flex; justify-content: space-between; align-items: center; background: var(--azul); color: #fff; border-radius: 5px; padding: 0 16px; font-size: 17px; font-weight: 400; box-shadow: 0 2px 4px #0004; margin-bottom: 8px; }
+    .dayhead > span { white-space: nowrap; }
+
+    /* Tarjetas compactas: proporciones del diseño de referencia */
+    .card { position: relative; background: #fff; border-left: 3px solid var(--naranja); border-radius: 5px; padding: 6px 10px 9px 10px; margin-bottom: 8px; box-shadow: 0 1px 5px #0004; overflow: hidden; }
+    .card.verde { border-left-color: var(--verde); }
+    .card.naranja { border-left-color: var(--naranja); }
+    .row1 { min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 6px; border-bottom: 1px solid #dedede; padding-bottom: 3px; font-size: 16px; line-height: 20px; }
+    .time { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .time svg { width: 19px; height: 19px; fill: none; stroke: #808080; stroke-width: 2; flex: none; }
+    .lesson-number { white-space: nowrap; }
+    .subject { padding-right: 22px; font-size: 16px; font-weight: 700; line-height: 20px; margin: 2px 0; overflow-wrap: break-word; }
+    .dot { width: 16px; height: 16px; display: inline-block; vertical-align: -2px; border-radius: 50%; background: var(--naranja); margin-left: 12px; }
+    .info { display: flex; align-items: center; gap: 8px; color: var(--gris); font-size: 16px; line-height: 20px; margin-top: 3px; min-width: 0; }
+    .info svg { width: 20px; height: 20px; fill: #838383; flex: none; }
+    .info span { overflow-wrap: anywhere; }
+    .dots { position: absolute; right: 15px; top: 37px; display: flex; flex-direction: column; gap: 3px; pointer-events: none; }
+    .dots i { display:block; width:4px; height:4px; border-radius:50%; background:#808080; }
+    .empty { text-align: center; color: #777; padding: 32px 10px; font-size: 15px; }
+    .search-panel { display: none; padding: 0 0 8px; }
+    .search-panel.open { display: block; }
+    .search-panel input { width: 100%; height: 36px; border: 1px solid #bcc6d5; background: #fff; color: #222; padding: 0 10px; border-radius: 5px; font-size: 15px; }
+    @media (max-width: 359px) {
+      .topbar { padding-inline: 10px; }
+      .top-right { gap: 12px; }
+      .login { font-size: 16px; }
+      .chips-left { gap: 5px; }
+      .pill { padding-inline: 9px; font-size: 12px; }
+      .updated { font-size: 12px; padding-inline: 8px; }
+      .row1 { font-size: 14px; }
+      .subject { font-size: 14px; }
+      .info { font-size: 14px; }
+    }
+    @media (min-width: 481px) {
+      /* La aplicación sigue siendo una pantalla de celular, sin ampliarse. */
+      .topbar { border-radius: 0 0 4px 4px; }
+    }
+    @media print {
+      body, .app { background: #fff; }
+      .topbar, .chips, .datebox, .actions, .search-panel { display: none !important; }
+      .card, .dayhead { box-shadow: none; break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <!-- Emblema vectorial del HTML que proporcionaste. Puedes sustituirlo por el logo oficial. -->
+    <svg class="logo" viewBox="-4 0 286 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Эмблема">
+      <defs><clipPath id="rhombus"><polygon points="12,127 139,252 266,127 139,0"/></clipPath></defs>
+      <polygon points="8,127 139,258 270,127" fill="none" stroke="#fff" stroke-width="9"/>
+      <path d="M0,127 Q8,62 82,8 L104,28 Q52,72 36,127 Z M278,127 Q270,62 196,8 L174,28 Q226,72 242,127 Z" fill="#fff"/>
+      <g clip-path="url(#rhombus)" stroke="#fff" stroke-width="5" fill="none"><path d="M8 127H270M68 60V200M139 60V252M210 60V200M70 190H208"/></g>
+      <g stroke="#fff" stroke-width="17" fill="none"><path d="M92 16L214 190M186 16L64 190"/></g>
+      <g fill="#fff" transform="translate(139 38)"><path d="M0 -24L4.5 -4.5 24 0 4.5 4.5 0 24 -4.5 4.5 -24 0 -4.5 -4.5Z"/><path transform="rotate(45) scale(.68)" d="M0 -24L4.5 -4.5 24 0 4.5 4.5 0 24 -4.5 4.5 -24 0 -4.5 -4.5Z"/></g>
+    </svg>
+    <div class="top-right">
+      <svg class="glasses" viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#ff8069" stroke-width="2.7" stroke-linecap="round"><circle cx="8" cy="19" r="5.5"/><circle cx="24" cy="19" r="5.5"/><path d="M13 17c2-2 4-2 6 0M2.5 19L5 8M29.5 19L27 8"/></svg>
+      <span class="login" aria-label="Вход"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7 9.6 8.4 12.2 11H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>ВХОД</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="chips">
+      <div class="chips-left">
+        <button type="button" class="circle" id="back" aria-label="Предыдущий день" title="Предыдущий день">
+          <svg viewBox="0 0 24 24"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z"/></svg>
+        </button>
+        <span class="pill" id="group"></span>
+      </div>
+      <span class="pill updated" id="updated"></span>
+    </div>
+
+    <label class="datebox" for="date-input">
+      <svg class="date-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM7 12h5v5H7z"/></svg>
+      <span class="date-content"><span class="date-label">Выберите дату</span><span class="date-value" id="date-value"></span></span>
+      <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 9 8 8 8-8"/></svg>
+      <input type="date" class="date-input" id="date-input" aria-label="Выберите дату">
+    </label>
+
+    <div class="actions">
+      <button type="button" class="circle search-symbol" id="search-btn" aria-label="Поиск" title="Поиск"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg></button>
+      <button type="button" class="circle" id="print-btn" aria-label="Печать" title="Печать"><svg viewBox="0 0 24 24"><path d="M19 8H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3zm-3 11H8v-5h8v5zm3-7a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM18 3H6v4h12V3z"/></svg></button>
+      <button type="button" class="circle" id="export-btn" aria-label="Экспорт" title="Экспорт"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h11v-7h-3v4l-4-4 4-4v3h3V8l-6-6zm0 1.8L18.2 8H14V3.8z"/></svg></button>
+      <button type="button" class="circle" id="calendar-btn" aria-label="Календарь" title="Календарь"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V9h14v11z"/></svg></button>
+    </div>
+
+    <div id="search-panel" class="search-panel">
+      <input id="search-field" type="search" placeholder="Поиск предмета, преподавателя, аудитории" aria-label="Поиск по расписанию">
+    </div>
+
+    <div class="dayhead"><span id="day-name"></span><span id="day-date"></span></div>
+    <section id="lessons" aria-live="polite" aria-label="Занятия"></section>
+  </main>
+</div>
+<script>
+'use strict';
+/* ================== SOLO EDITA ESTOS DATOS ===================== */
+const GRUPO = 'ПФ4-1-26МБ';
+const ACTUALIZADO = '22.11.2026';
+// La web abre el día actual si tiene clases. Si hoy no hay clases,
+// abre el siguiente día programado. También se puede elegir cualquier fecha.
+const FECHA_INICIAL = 'auto';
+
+// ARCHIVO DE HORARIOS: los días guardados aquí permanecen al publicar el HTML.
+// Para añadir días futuros, copia uno de los bloques de fecha y modifica sus datos.
+// El campo «numero» permite conservar 2-е, 3-е, 4-е занятие de la imagen.
+const HORARIO = {
+  '2026-11-21': [
+    {numero:1, inicio:'09:30', fin:'11:00', materia:'лек Кросс-культурная адаптация', profesor:'ст.пр.Евсеева А.А.', aula:'6', color:'verde', punto:true},
+    {numero:2, inicio:'11:15', fin:'12:45', materia:'пр Русский язык как иностранный', profesor:'преп.Сабитова Н.Г.', aula:'3-08Б', color:'naranja'}
+  ],
+  // LUNES 23.11.2026 — horario solicitado, tomado de la segunda captura.
+  // Todas usan el aula 3-81L, según la indicación de igualar al segundo turno.
+  '2026-11-23': [
+    {numero:2, inicio:'11:15', fin:'12:45', materia:'пр Русский язык как иностранный', profesor:'преп.Сабитова Н.Г.', aula:'3-81L', color:'naranja'},
+    {numero:3, inicio:'13:30', fin:'15:00', materia:'пр Русский язык как иностранный', profesor:'преп.Сабитова Н.Г.', aula:'3-81L', color:'naranja'},
+    {numero:4, inicio:'15:15', fin:'16:45', materia:'пр Русский язык как иностранный', profesor:'преп.Сабитова Н.Г.', aula:'3-81L', color:'naranja'}
+  ]
+  // NUEVO DÍA (ejemplo):
+  // , '2026-11-24': [
+  //    {numero:1, inicio:'09:30', fin:'11:00', materia:'Название предмета',
+  //     profesor:'Преподаватель', aula:'101', color:'naranja'}
+  // ]
+};
+/* ================= FIN DE DATOS EDITABLES ===================== */
+const $ = id => document.getElementById(id);
+const DIAS = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const ICONO_RELOJ = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 6.5V12l3.5 2"/></svg>';
+const ICONO_PROF = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM9 7.5a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4zM13 17H5v-.8c0-1.4 2.7-2.2 4-2.2s4 .8 4 2.2V17zm6-2h-4v-1.5h4V15zm0-3h-4v-1.5h4V12zm0-3h-4V7.5h4V9z"/></svg>';
+const ICONO_AULA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V3h14v18h-5v-4h-4v4H5zm3-14h2V5H8v2zm3 0h2V5h-2v2zm3 0h2V5h-2v2zM8 11h2V9H8v2zm3 0h2V9h-2v2zm3 0h2V9h-2v2zM8 15h2v-2H8v2zm3 0h2v-2h-2v2zm3 0h2v-2h-2v2z"/></svg>';
+const fmt = iso => iso.split('-').reverse().join('.');
+const escapeHTML = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
+function hoyISO(){ const d = new Date(), p = n => String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; }
+const params = new URLSearchParams(location.search);
+function fechaDeInicio() {
+  const solicitada = params.get('fecha');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(solicitada || '')) return solicitada;
+  if (FECHA_INICIAL !== 'auto') return FECHA_INICIAL;
+  const hoy = hoyISO();
+  if (HORARIO[hoy]?.length) return hoy;
+  const proxima = Object.keys(HORARIO).filter(fecha => fecha > hoy && HORARIO[fecha]?.length).sort()[0];
+  return proxima || hoy;
+}
+let selected = fechaDeInicio();
+
+$('group').textContent = GRUPO;
+$('updated').textContent = 'Обн.: ' + ACTUALIZADO;
+
+function render() {
+  const d = new Date(selected + 'T12:00:00');
+  $('date-input').value = selected;
+  $('date-value').textContent = fmt(selected);
+  $('day-name').textContent = DIAS[d.getDay()];
+  $('day-date').textContent = fmt(selected);
+  const search = $('search-field').value.toLocaleLowerCase('ru');
+  const all = HORARIO[selected] || [];
+  const matches = all.map((c, i) => ({ ...c, number: c.numero ?? i + 1 })).filter(c =>
+    [c.materia, c.profesor, c.aula].some(v => String(v||'').toLocaleLowerCase('ru').includes(search))
+  );
+  $('lessons').innerHTML = matches.length ? matches.map(c => `
+    <article class="card ${c.color === 'verde' ? 'verde' : 'naranja'}">
+      <div class="row1">
+        <span class="time">${ICONO_RELOJ}${escapeHTML(c.inicio)} - ${escapeHTML(c.fin)}</span>
+        <span class="lesson-number">${c.number}-е занятие</span>
+      </div>
+      <div class="subject">${escapeHTML(c.materia)}${c.punto ? '<span class="dot"></span>' : ''}</div>
+      <div class="info">${ICONO_PROF}<span>${escapeHTML(c.profesor)}</span></div>
+      <div class="info">${ICONO_AULA}<span>Аудитория: ${escapeHTML(c.aula)}</span></div>
+      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    </article>`).join('') : '<div class="empty">Занятий нет</div>';
+}
+function cambiarDia(delta) {
+  const date = new Date(selected + 'T12:00:00');
+  date.setDate(date.getDate() + delta);
+  const p = n => String(n).padStart(2, '0');
+  selected = `${date.getFullYear()}-${p(date.getMonth()+1)}-${p(date.getDate())}`;
+  render();
+}
+function abrirCalendario() {
+  const el = $('date-input');
+  if (typeof el.showPicker === 'function') { try { el.showPicker(); return; } catch(_) {} }
+  el.focus(); el.click();
+}
+$('date-input').addEventListener('change', event => { if(event.target.value) { selected = event.target.value; render(); } });
+$('calendar-btn').addEventListener('click', abrirCalendario);
+$('back').addEventListener('click', () => cambiarDia(-1));
+$('search-btn').addEventListener('click', () => {
+  const panel = $('search-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) $('search-field').focus();
+  else { $('search-field').value = ''; render(); }
+});
+$('search-field').addEventListener('input', render);
+$('print-btn').addEventListener('click', () => window.print());
+$('export-btn').addEventListener('click', () => {
+  const rows = (HORARIO[selected]||[]).map(c => [selected,c.inicio,c.fin,c.materia,c.profesor,c.aula].map(v => '"' + String(v||'').replaceAll('"','""') + '"').join(','));
+  const csv = '\ufeff' + ['Дата,Начало,Конец,Предмет,Преподаватель,Аудитория',...rows].join('\r\n');
+  const uri = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const link = document.createElement('a'); link.href = uri; link.download = 'Расписание-' + selected + '.csv'; link.click();
+  setTimeout(() => URL.revokeObjectURL(uri),1000);
+});
+// Deslizar en la zona de clases: izquierda = siguiente día; derecha = anterior.
+let startX = 0, startY = 0;
+$('lessons').addEventListener('touchstart', e => { startX=e.changedTouches[0].clientX; startY=e.changedTouches[0].clientY; }, {passive:true});
+$('lessons').addEventListener('touchend', e => {
+  const dx=e.changedTouches[0].clientX-startX, dy=e.changedTouches[0].clientY-startY;
+  if (Math.abs(dx)>65 && Math.abs(dx)>Math.abs(dy)*1.3) cambiarDia(dx<0?1:-1);
+},{passive:true});
+render();
+</script>
+</body>
+</html>
